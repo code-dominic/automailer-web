@@ -6,7 +6,11 @@ const UserSchema = new mongoose.Schema({
     type : String,
     require : true,
     unique : true
-  }
+  },
+  emailData : [{
+    type : mongoose.Schema.Types.ObjectId , 
+    ref : 'PersonData'
+  }]
 });
 
 UserSchema.plugin(passportLocalMongoose);

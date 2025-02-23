@@ -3,24 +3,18 @@ const mongoose = require("mongoose");
 
 
 const personDataSchema = new mongoose.Schema({
-    name: {
+    emailId : {
       type : String,
-      required : [true , "Name is required"],
+      require : true
     },
-    email: {
-      type: String,
-      required: [true, "Email is required"], // Custom error message
-      lowercase: true, // Automatically convert email to lowercase
+    name : {
+      type : String,
+      require : true
     },
-    status: {
-      type: String,
-      default: "Pending",
-    },
-    clicked: { type: Boolean, default: false },
-    clickedAt: { type: Date, default: null },
-    // emailsSend : {
-    //   type : 
-    // }
+    emailSend : [{
+      type : mongoose.Schema.Types.ObjectId,
+      ref : 'EmailsSent'
+    }]
     
 });
 

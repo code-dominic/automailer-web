@@ -1,6 +1,6 @@
-const Template =( {subject, greeting, body, buttonLabel, buttonLink,styles, _id })=>{
-    return( `
-    <!DOCTYPE html>
+const Template =( {subject, greeting, body, buttonLabel, buttonLink,styles })=>{
+    return( 
+    `<!DOCTYPE html>
     <html>
     <head>
       <style>
@@ -20,17 +20,11 @@ const Template =( {subject, greeting, body, buttonLabel, buttonLink,styles, _id 
         <div class="email-body">
           <p>${greeting}</p>
           <p>${body}</p>
-         <a href="http://localhost:5000/emails/track?userId=${_id}" 
-   class="button"
-   target="_blank"
-   style="display: inline-block; padding: 0.75rem 1.5rem; background-color:${styles.buttonColor}; color: ${styles.buttonTextColor}; text-decoration: none; font-size: 1rem; border-radius: 5px; margin-top: 1rem;">
-   ${buttonLabel}
-</a>
-
+          <a href="${buttonLink}" class="button">${buttonLabel}</a>
         </div>
       </div>
     </body>
-    </html>
-  `)};
+    </html>`
+  )};
 
 module.exports =Template;

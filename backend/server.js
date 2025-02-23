@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const connectDB = require("./config/db");
+const connectDB = require("./config/db.js");
 const session = require('express-session')
 const passport = require('passport');
 const localStrategy = require("passport-local");

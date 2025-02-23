@@ -2,7 +2,7 @@ const fs = require("fs");
 const csvParser = require("csv-parser");
 const PersonData = require("../models/PersonData");
 
-const uploadCSV = async (req, res) => {
+exports.uploadCSV = (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "No file uploaded" });
   }
@@ -31,5 +31,3 @@ const uploadCSV = async (req, res) => {
       }
     });
 };
-
-module.exports = { uploadCSV }; // Ensure it's properly exported
