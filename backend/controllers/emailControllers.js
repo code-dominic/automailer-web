@@ -2,16 +2,29 @@ const nodemailer = require("nodemailer");
 const PersonData = require("../models/PersonData");
 // const EmailTemplate = require("../models/EmailTemplate");
 const Template = require("../email-templates/templates");
+const jwt = require('jsonwebtoken');
+const User = require('../models/User')
+
+
+const verifyToken = (token) => {
+  if (!token) throw new Error("You have to log in to access this resource.");
+  return jwt.verify(token, "1234");
+};
 
 exports.sendEmails = async (req, res) => {
   try {
-    const { subject, greeting, body, buttonLabel, buttonLink, styles } = req.body.emailTemplate;
-    const emails = await PersonData.find();
-    console.log(emails);
+    const token = req.headers["authorization"];
+    console.log("token : " , token)
+    const { id } = verifyToken(token);
 
-    if (emails.length === 0) {
+    const user = await User.findById(id).populate({
+      path: "emailData"});
+
+    if (!user || user.emailData.length === 0) {
       return res.status(400).json({ message: "No pending emails to send." });
     }
+
+    const { subject, greeting, body, buttonLabel, buttonLink, styles } = req.body.emailTemplate;
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -21,31 +34,35 @@ exports.sendEmails = async (req, res) => {
       },
     });
 
-    const emailPromises = emails.map(async (emailDoc) => {
+    await transporter.verify();
+
+    const bulkUpdates = [];
+
+    const emailPromises = user.emailData.map(async (emailDoc) => {
       const mailOptions = {
         from: process.env.EMAIL,
-        to: emailDoc.email,
+        to: emailDoc.emailId,
+        subject,
         html: Template({ subject, greeting, body, buttonLabel, buttonLink, styles, _id: emailDoc._id }),
       };
 
       try {
         await transporter.sendMail(mailOptions);
-        emailDoc.status = "Sent";
-        await emailDoc.save();
       } catch (error) {
-        console.error(`Error sending email to ${emailDoc.email}:`, error);
-        emailDoc.status = "Failed";
-        await emailDoc.save();
+        console.error(`Error sending email to ${emailDoc.emailId}:`, error);
       }
     });
 
     await Promise.all(emailPromises);
-    res.status(200).json({ message: "Emails sent successfully!" });
+    await user.emailData[0].constructor.bulkWrite(bulkUpdates);
+
+    res.status(200).json({ message: "Emails processed successfully!" });
   } catch (error) {
     console.error("Error sending emails:", error);
-    res.status(500).json({ message: "Failed to send emails." });
+    res.status(401).json({ message: error.message });
   }
 };
+
 
 // exports.saveEmailTemplate = async (req, res) => {
 //   try {
@@ -65,14 +82,25 @@ exports.sendEmails = async (req, res) => {
 
 exports.getEmails = async (req, res) => {
   try {
-    let query = {};
-    if (req.query.status) query.status = req.query.status;
-    const emails = await PersonData.find(query);
-    res.status(200).json(emails);
+    const token = req.headers["authorization"];
+    const { id } = verifyToken(token);
+
+    const user = await User.findById(id).populate({
+      path: "emailData",
+      match: req.query.status ? { status: req.query.status } : {}, // Filter at DB level
+    });
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.status(200).json(user.emailData);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching emails" });
+    console.error("Error fetching emails:", error);
+    
+    const statusCode = error.message.includes("log in") ? 401 : 500;
+    res.status(statusCode).json({ message: error.message || "Error fetching emails." });
   }
 };
+
 
 exports.trackEmailClick = async (req, res) => {
   const { userId } = req.query;

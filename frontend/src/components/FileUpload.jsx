@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const FileUpload = () => {
+const FileUpload = ({token}) => {
   const [file, setFile] = useState(null);
 
   const handleFileChange = (e) => {
@@ -22,6 +22,8 @@ const FileUpload = () => {
       const response = await axios.post("http://localhost:5000/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data", // Required for file upload
+          "authorization" : token
+          
         },
       });
 

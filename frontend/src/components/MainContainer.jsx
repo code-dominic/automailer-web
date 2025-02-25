@@ -6,8 +6,9 @@ import EmailList from "./EmailList";
 import EmailTemplateEditor from "./EmailTemplateEditor";
 import SidePanelItems from "./SidePanelItems";
 import FileUpload from "./FileUpload";
+import Logout from "./Logout/Logout";
 
-const MainContainer = () => {
+const MainContainer = ({token , setToken}) => {
   const [emails, setEmails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -17,7 +18,12 @@ const MainContainer = () => {
   useEffect(() => {
     const fetchEmails = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/emails?emails=${emailsRequired}`);
+        const response = await axios.get(`http://localhost:5000/emails?emails=${emailsRequired}` , {
+          headers: {
+            "authorization" : token
+            
+        },
+      });
         setEmails(response.data);
         setLoading(false);
       } catch (error) {
@@ -44,7 +50,10 @@ const MainContainer = () => {
             <SidePanelItems name="Pending" emailsRequired={emailsRequired} setEmailsRequired={setEmailsRequired} variant="outline-light" />
             <SidePanelItems name="Responded" emailsRequired={emailsRequired} setEmailsRequired={setEmailsRequired} variant="outline-light" />
             <SidePanelItems name="Unresponded" emailsRequired={emailsRequired} setEmailsRequired={setEmailsRequired} variant="outline-light" />
-            <FileUpload />
+            <FileUpload token = {token }/>
+            { token ?<Logout token ={token} setToken={setToken}/>:<></>} 
+
+
           </div>
         </div>
 
@@ -60,6 +69,8 @@ const MainContainer = () => {
               <SidePanelItems name="Pending" emailsRequired={emailsRequired} setEmailsRequired={setEmailsRequired} variant="dark" />
               <SidePanelItems name="Responded" emailsRequired={emailsRequired} setEmailsRequired={setEmailsRequired} variant="dark" />
               <SidePanelItems name="Unresponded" emailsRequired={emailsRequired} setEmailsRequired={setEmailsRequired} variant="dark" />
+              <FileUpload token = {token} />
+            { token ?<Logout token ={token} setToken={setToken}/>:<></>} 
             </div>
           </Offcanvas.Body>
         </Offcanvas>
@@ -83,7 +94,7 @@ const MainContainer = () => {
 
                 {/* Email Template Editor */}
                 <Col xs={12} md={5}>
-                  <EmailTemplateEditor />
+                  <EmailTemplateEditor token = {token} />
                 </Col>
               </Row>
             </Container>

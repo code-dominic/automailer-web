@@ -4,7 +4,7 @@ import { Button, Card, CardContent, Typography, IconButton, Tooltip } from "@mui
 import { ChromePicker, SketchPicker } from "react-color";
 import { ColorLens } from "@mui/icons-material";
 
-const EmailTemplateEditor = () => {
+const EmailTemplateEditor = ({token}) => {
   const [subject, setSubject] = useState("Welcome to AutoMailer!");
   const [greeting, setGreeting] = useState("Hello [User's Name],");
   const [body, setBody] = useState("We are thrilled to have you on board! To get started, click the button below:");
@@ -35,9 +35,29 @@ const EmailTemplateEditor = () => {
     };
 
     console.log(emailTemplate);
+    const Tokenlocal = localStorage.getItem('token');
+
+    if(!Tokenlocal)  {
+      console.error("No token found, authentication required.");
+      setMessage("Authentication error. Please log in again.");
+      return;
+    }
 
     try {
-      const response = await axios.post("http://localhost:5000/emails/send", { emailTemplate });
+      // const response = await axios.post("http://localhost:5000/emails/send", { 
+
+      //   headers : { "authorization" : token},
+      //   emailTemplate }
+      // );
+      const response = await axios.post(
+        "http://localhost:5000/emails/send",
+        { emailTemplate }, // Body
+        {
+          headers: {
+            Authorization: token, 
+          }
+        }
+      );
       setMessage(response.data.message);
     } catch (error) {
       console.error("Error sending emails:", error);
