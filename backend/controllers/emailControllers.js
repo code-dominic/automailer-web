@@ -4,6 +4,7 @@ const PersonData = require("../models/PersonData");
 const Template = require("../email-templates/templates");
 const jwt = require('jsonwebtoken');
 const User = require('../models/User')
+const EmailsSent = require('../models/EmailsSent');
 
 
 const verifyToken = (token) => {
@@ -14,17 +15,27 @@ const verifyToken = (token) => {
 exports.sendEmails = async (req, res) => {
   try {
     const token = req.headers["authorization"];
-    console.log("token : " , token)
+    console.log("token:", token);
     const { id } = verifyToken(token);
 
-    const user = await User.findById(id).populate({
-      path: "emailData"});
+    const user = await User.findById(id).populate("emailData");
 
     if (!user || user.emailData.length === 0) {
       return res.status(400).json({ message: "No pending emails to send." });
     }
 
     const { subject, greeting, body, buttonLabel, buttonLink, styles } = req.body.emailTemplate;
+
+    // Creating a new EmailsSent document
+    const emailsSent = new EmailsSent({
+      subject,
+      greeting,
+      body,
+      buttonLabel,
+      buttonLink,
+      styles,
+    });
+    await emailsSent.save();
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -48,20 +59,42 @@ exports.sendEmails = async (req, res) => {
 
       try {
         await transporter.sendMail(mailOptions);
+
+        // Update each PersonData document to track the sent email
+        bulkUpdates.push({
+          updateOne: {
+            filter: { _id: emailDoc._id },
+            update: {
+              $push: {
+                emailSend: {
+                  emailsendRef: emailsSent._id,
+                  status: "sent",
+                  clicked: false,
+                  clickedAt: null,
+                },
+              },
+            },
+          },
+        });
       } catch (error) {
         console.error(`Error sending email to ${emailDoc.emailId}:`, error);
       }
     });
 
     await Promise.all(emailPromises);
-    await user.emailData[0].constructor.bulkWrite(bulkUpdates);
 
-    res.status(200).json({ message: "Emails processed successfully!" });
+    // Apply bulk updates to PersonData collection
+    if (bulkUpdates.length > 0) {
+      await PersonData.bulkWrite(bulkUpdates);
+    }
+
+    res.status(200).json({ message: "Emails sent and logged successfully!" });
   } catch (error) {
     console.error("Error sending emails:", error);
-    res.status(401).json({ message: error.message });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 
 // exports.saveEmailTemplate = async (req, res) => {
@@ -82,7 +115,7 @@ exports.sendEmails = async (req, res) => {
 
 exports.getEmails = async (req, res) => {
   try {
-    const token = req.headers["authorization"];
+    const token = req.headers["authorization"]; 
     const { id } = verifyToken(token);
 
     const user = await User.findById(id).populate({
@@ -91,6 +124,7 @@ exports.getEmails = async (req, res) => {
     });
 
     if (!user) return res.status(404).json({ message: "User not found" });
+    console.log(user.emailData);
 
     res.status(200).json(user.emailData);
   } catch (error) {

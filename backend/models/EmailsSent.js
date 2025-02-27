@@ -16,5 +16,5 @@ const EmailsSentSchema = new mongoose.Schema({
 
 
 
-const EmailsSend = mongoose.model("EmailsSend", EmailsSentSchema);
-module.exports = EmailsSend;
+const EmailsSent = mongoose.model("EmailsSent", EmailsSentSchema);
+module.exports = EmailsSent;

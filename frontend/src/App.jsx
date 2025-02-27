@@ -5,7 +5,9 @@ import Register from "./components/Register/Register";
 import useToken from "./components/App/useToken";
 
 
-import MainContainer from "./components/MainContainer";
+// import MainContainer from "./components/MainContainer";
+import DashBoard from './components/Dashboard/DashBoard'
+import PersonDataDashboard from "./components/personDataDashboard/PersonDataDashboard";
 
 
 const App = () => {
@@ -22,7 +24,7 @@ const App = () => {
             <Route path="/register" element={<Register setToken ={setToken}/>}/>
           </Routes>
         
-        </div>
+        </div>  
       </Router>
     )
     
@@ -32,7 +34,8 @@ const App = () => {
     <Router>
       <div className="Wrapper">
         <Routes>
-          <Route path="/" element={<MainContainer token={token} setToken={setToken}/>}/>
+          <Route path="/" element={<DashBoard token={token} setToken={setToken}/>}/>
+          <Route path="/emails" element={<PersonDataDashboard token={token}  setToken={setToken}/>}  />
         </Routes>
       </div>
     </Router>

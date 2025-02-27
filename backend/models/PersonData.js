@@ -1,21 +1,32 @@
 const mongoose = require("mongoose");
 
-
-
 const personDataSchema = new mongoose.Schema({
-    emailId : {
-      type : String,
-      require : true
+    emailId: {
+        type: String,
+        required: true
     },
-    name : {
-      type : String,
-      require : true
+    name: {
+        type: String,
+        required: true
     },
-    emailSend : [{
-      type : mongoose.Schema.Types.ObjectId,
-      ref : 'EmailsSent'
+    emailSend: [{
+        emailsendRef: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "EmailsSent"  // ✅ Ensure this matches the actual model name
+        },
+        status: {
+            type: String,
+            enum: ["sent", "failed", "delivered"]
+        },
+        clicked: {
+            type: Boolean,
+            default: false
+        },
+        clickedAt: {
+            type: Date,
+            default: null
+        }
     }]
-    
 });
 
 const PersonData = mongoose.model("PersonData", personDataSchema);

@@ -9,6 +9,8 @@ const jwt = require('jsonwebtoken');
 
 const uploadRoutes = require("./routes/uploadRoutes");
 const emailRoutes = require("./routes/emailRoutes");
+const router = require("./routes/emailRoutes");
+const PersonData = require("./models/PersonData.js");
 
 // const userRouter = require("./routes/userRouter")
 
@@ -54,6 +56,58 @@ app.post('/login' , async(req,res)=>{
   res.json({token});  
   
 })
+
+app.get("/emails/data", async (req, res) => {
+  try {
+      const { id } = req.query;
+      if (!id) {
+          return res.status(400).json({ error: "ID is required" });
+      }
+
+      console.log("Fetching data for ID:", id);
+
+      const personData = await PersonData.findById(id)
+          .populate({
+              path: "emailSend.emailsendRef",  // ✅ Corrected
+          })
+          .exec();
+
+      console.log("After population:", JSON.stringify(personData, null, 2)); // Debug output
+
+      if (!personData) {
+          return res.status(404).json({ error: "Person not found" });
+      }
+
+      res.json(personData);
+  } catch (error) {
+      console.error("Error fetching person data:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get('/emails/delete' , async(req,res)=>{
+  try{
+    const {id } = req.query;
+    
+    const deletedPerson = await PersonData.findByIdAndDelete(id);
+
+    if (!deletedPerson) {
+      return res.status(404).json({ message: "Person not found" });
+    }
+
+    await User.updateMany(
+      { emailData: id }, // Find users with this reference
+      { $pull: { emailData: id } } // Remove reference from array
+  );
+
+  res.json({ message: "PersonData deleted and reference removed from User." });
+} catch (error) {
+  console.error("Error deleting PersonData:", error);
+  res.status(500).json({ message: "Server error" });
+}
+
+});
+
 
 
 

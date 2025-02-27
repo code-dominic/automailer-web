@@ -1,11 +1,22 @@
-
-import ListItems from "./ListItems";
-import FileUpload from "./FileUpload";
 import {Table} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useNavigate } from "react-router-dom";
 
 
-const EmailList = (props) => {
+
+
+const EmailSentTable = ({emailsent , setCurrEmail}) => {
+    const handelClick = (key) => {
+        const selectedEmail = emailsent[key]?.emailsendRef;
+        if (selectedEmail) {
+            setCurrEmail(selectedEmail);
+            console.log("Updated Email:", selectedEmail);
+        } else {
+            console.warn("Invalid email selection:", emailsent[key]);
+        }
+    };
+    
+
 
   return (
     
@@ -13,15 +24,15 @@ const EmailList = (props) => {
     <Table striped bordered hover>
       <thead>
         <tr>
-          <th>Name</th>
+          <th>Subject</th>
           <th>Status</th>
           <th>Clicked</th>
         </tr>
       </thead>
       <tbody>
-        {props.emails.map((e, index) => (
-          <tr key={index}>
-            <td>{e.name}</td>
+        {emailsent.map((e, index) => (
+          <tr key={index} onClick={() => handelClick(index)}>
+            <td>{e.emailsendRef.subject}</td>
             <td>
               <span
                 className={`badge bg-${e.status === "Sent" ? "success" : "warning"}`}
@@ -39,4 +50,4 @@ const EmailList = (props) => {
   );
 };
 
-export default EmailList;
+export default EmailSentTable;
