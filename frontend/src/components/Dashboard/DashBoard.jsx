@@ -18,15 +18,20 @@ const DashBoard = ({token , setToken}) => {
         const response = await axios.get(`http://localhost:5000/emails?emails=${emailsRequired}` , {
           headers: {
             "authorization" : token
-            
         },
       });
         setEmails(response.data);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching emails:", error);
-        setError("Failed to fetch emails.");
-        setLoading(false);
+          if (error.response && error.response.status === 401) {
+            console.warn("Token expired! Logging out...");
+            localStorage.removeItem("token"); // Remove expired token
+            window.location.href = "/login"; // Redirect to login page
+            setError("Failed to fetch emails.");
+            setLoading(true);
+          } else {
+            console.error("Error fetching emails:", error);
+          }
       }
     };
     fetchEmails();

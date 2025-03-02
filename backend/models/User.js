@@ -16,6 +16,10 @@ const UserSchema = new mongoose.Schema({
     type : String,
     require : true
   },
+  appPassword :{
+    type : String,
+    require : true
+  },
   emailData : [{
     type : mongoose.Schema.Types.ObjectId , 
     ref : 'PersonData'

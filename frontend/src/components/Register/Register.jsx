@@ -10,11 +10,12 @@ export default function Register({ setToken }) {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [appPassword , setAppPassword] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = async () => {
     try {
-      const res = await axios.post("http://localhost:5000/register", { username, password, email });
+      const res = await axios.post("http://localhost:5000/register", { username, password, email , appPassword });
       setToken(res.data.token);
       navigate("/");
     } catch (err) {
@@ -61,6 +62,10 @@ export default function Register({ setToken }) {
               <Form.Group className="mb-3">
                 <Form.Label>Password</Form.Label>
                 <Form.Control type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>App Password</Form.Label>
+                <Form.Control type="password" value={appPassword} onChange={(e) => setAppPassword(e.target.value)} />
               </Form.Group>
               <Button variant="primary" className="w-100" onClick={handleSubmit}>
                 Submit

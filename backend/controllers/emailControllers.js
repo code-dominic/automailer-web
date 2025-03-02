@@ -8,9 +8,24 @@ const EmailsSent = require('../models/EmailsSent');
 
 
 const verifyToken = (token) => {
-  if (!token) throw new Error("You have to log in to access this resource.");
-  return jwt.verify(token, "1234");
+  try {
+    if (!token) {
+      throw new Error("Token missing. Please log in.");
+    }
+    return jwt.verify(token, "1234"); // Replace with your secret key
+  } catch (error) {
+    console.error("JWT Verification Error:", error); // Log the actual error
+
+    if (error.name === "TokenExpiredError") {
+      throw new Error("Token expired. Please log in again.");
+    } else if (error.name === "JsonWebTokenError") {
+      throw new Error("Invalid token. Please log in again.");
+    } else {
+      throw new Error("Authentication failed.");
+    }
+  }
 };
+
 
 exports.sendEmails = async (req, res) => {
   try {
@@ -40,8 +55,8 @@ exports.sendEmails = async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASSWORD,
+        user: user.email,
+        pass: user.appPassword,
       },
     });
 
@@ -51,7 +66,7 @@ exports.sendEmails = async (req, res) => {
 
     const emailPromises = user.emailData.map(async (emailDoc) => {
       const mailOptions = {
-        from: process.env.EMAIL,
+        from: user.email,
         to: emailDoc.emailId,
         subject,
         html: Template({ subject, greeting, body, buttonLabel, buttonLink, styles, _id: emailDoc._id }),
@@ -115,26 +130,29 @@ exports.sendEmails = async (req, res) => {
 
 exports.getEmails = async (req, res) => {
   try {
-    const token = req.headers["authorization"]; 
+    const token = req.headers["authorization"];
+    if (!token) return res.status(401).json({ message: "Token missing. Please log in." });
+
     const { id } = verifyToken(token);
 
     const user = await User.findById(id).populate({
       path: "emailData",
-      match: req.query.status ? { status: req.query.status } : {}, // Filter at DB level
+      match: req.query.status ? { status: req.query.status } : {},
     });
 
     if (!user) return res.status(404).json({ message: "User not found" });
-    console.log(user.emailData);
 
     res.status(200).json(user.emailData);
   } catch (error) {
     console.error("Error fetching emails:", error);
-    
-    const statusCode = error.message.includes("log in") ? 401 : 500;
-    res.status(statusCode).json({ message: error.message || "Error fetching emails." });
+
+    if (error.message.includes("Token expired") || error.message.includes("Invalid token")) {
+      return res.status(401).json({ message: error.message });
+    }
+
+    res.status(500).json({ message: "Internal server error." });
   }
 };
-
 
 exports.trackEmailClick = async (req, res) => {
   const { userId } = req.query;
