@@ -30,7 +30,7 @@ const verifyToken = (token) => {
 exports.sendEmails = async (req, res) => {
   try {
     const token = req.headers["authorization"];
-    console.log("token:", token);
+    // console.log("token:", token);
     const { id } = verifyToken(token);
 
     const user = await User.findById(id).populate("emailData");
@@ -65,11 +65,21 @@ exports.sendEmails = async (req, res) => {
     const bulkUpdates = [];
 
     const emailPromises = user.emailData.map(async (emailDoc) => {
+      const trackingLink = `http://localhost:5000/track-click?personId=${emailDoc._id}&emailSentId=${emailsSent._id}&redirectUrl=${encodeURIComponent(buttonLink)}`;;
+      console.log(trackingLink);
       const mailOptions = {
         from: user.email,
         to: emailDoc.emailId,
         subject,
-        html: Template({ subject, greeting, body, buttonLabel, buttonLink, styles, _id: emailDoc._id }),
+        html: Template({
+          subject,
+          greeting,
+          body,
+          buttonLabel,
+          buttonLink: trackingLink,  // Use tracking link instead of actual link
+          styles,
+          _id: emailDoc._id,
+        }),
       };
 
       try {
@@ -154,14 +164,31 @@ exports.getEmails = async (req, res) => {
   }
 };
 
-exports.trackEmailClick = async (req, res) => {
-  const { userId } = req.query;
-  if (!userId) return res.status(400).json({ message: "User ID is required" });
-
+exports.trackEmailClick = async (req, res) => async (req, res) => {
   try {
-    await PersonData.findByIdAndUpdate(userId, { clicked: true, clickedAt: new Date() }, { new: true });
-    res.send("<h1>Email Click Tracked Successfully!</h1>");
+    const { personId, emailSentId } = req.params;
+    console.log(personId)
+
+    // Update click tracking in the database
+    await PersonData.updateOne(
+      { _id: personId, "emailSend.emailsendRef": emailSentId },
+      {
+        $set: {
+          "emailSend.$.clicked": true,
+          "emailSend.$.clickedAt": new Date(),
+        },
+      }
+    );
+
+    // Redirect to actual link (store this in the database when sending emails)
+    const emailRecord = await PersonData.findById(personId);
+    const emailData = emailRecord.emailSend.find((e) => e.emailsendRef.toString() === emailSentId);
+
+    if (!emailData) return res.status(404).send("Invalid link");
+
+    res.redirect(emailData.buttonLink); // Redirect to actual video/doc
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error("Tracking error:", error);
+    res.status(500).send("Error tracking click");
   }
-};
+}

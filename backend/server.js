@@ -110,6 +110,37 @@ app.get('/emails/delete' , async(req,res)=>{
 
 
 
+app.get("/track-click", async (req, res) => {
+  try {
+    const { personId, emailSentId, redirectUrl } = req.query;
+
+    if (!personId || !emailSentId || !redirectUrl) {
+      return res.status(400).send("Invalid tracking link.");
+    }
+
+    // Update click tracking in the database
+    await PersonData.updateOne(
+      { _id: personId, "emailSend.emailsendRef": emailSentId },
+      {
+        $set: {
+          "emailSend.$.clicked": true,
+          "emailSend.$.clickedAt": new Date(),
+        },
+      }
+    );
+
+    // Redirect the user to the actual destination
+    res.redirect(decodeURIComponent(redirectUrl));
+  } catch (error) {
+    console.error("Tracking error:", error);
+    res.status(500).send("Error tracking click");
+  }
+});
+
+
+
+
+
 
 
 // Routes

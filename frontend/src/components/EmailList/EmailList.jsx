@@ -45,8 +45,8 @@ const EmailList = ({ emails }) => {
             </th>
 
 
-            <th>Status</th>
-            <th>Clicked</th>
+            {/* <th>Status</th>
+            <th>Clicked</th> */}
           </tr>
         </thead>
         <tbody>
@@ -54,14 +54,14 @@ const EmailList = ({ emails }) => {
             displayedEmails.map((e, index) => (
               <tr key={index} onClick={() => handleClick(e)}>
                 <td>{e.name}</td>
-                <td>
+                {/* <td>
                   <span className={`badge bg-${e.status === "Sent" ? "success" : "warning"}`}>
                     {e.status}
                   </span>
                 </td>
                 <td>
                   <span className="badge bg-success">{e.clicked ? "Clicked" : "-"}</span>
-                </td>
+                </td> */}
               </tr>
             ))
           ) : (
