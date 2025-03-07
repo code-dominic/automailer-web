@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { Form, Button } from "react-bootstrap";
 
-const FileUpload = ({token}) => {
+const FileUpload = ({token , needRefresh , setNeedRefresh }) => {
   const [file, setFile] = useState(null);
 
   const handleFileChange = (e) => {
@@ -26,8 +27,8 @@ const FileUpload = ({token}) => {
           
         },
       });
-
-      alert(response.data.message);
+      setNeedRefresh(needRefresh+1);
+      alert(needRefresh);
     } catch (error) {
       console.error("Error uploading file:", error.response?.data || error.message);
       alert("Failed to upload the file. Check the console for details.");
@@ -35,11 +36,17 @@ const FileUpload = ({token}) => {
   };
 
   return (
-    <div>
-      <input type="file" onChange={handleFileChange} />
-      <button onClick={handleUpload}>Upload</button>
+    <div style={{ padding: "20px", borderRadius: "10px", boxShadow: "0 4px 10px rgba(0, 0, 0, 2.2)"}}>
+      <Form>
+        <Form.Group controlId="formFile" className="mb-3">
+          <Form.Label>Upload File</Form.Label>
+          <Form.Control type="file" onChange={handleFileChange} />
+        </Form.Group>
+        <Button variant="primary" onClick={handleUpload}>Submit</Button>
+      </Form>
     </div>
   );
 };
+
 
 export default FileUpload;

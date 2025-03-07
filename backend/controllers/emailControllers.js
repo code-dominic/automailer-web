@@ -122,21 +122,41 @@ exports.sendEmails = async (req, res) => {
 
 
 
-// exports.saveEmailTemplate = async (req, res) => {
-//   try {
-//     const { subject, greeting, body, buttonLabel, buttonLink, styles } = req.body.emailTemplate;
+exports.saveEmailTemplate = async (req, res) => {
+  try {
+    const token = req.headers["authorization"];
+    if (!token) {
+      return res.status(401).json({ message: "Token missing. Please log in." });
+    }
 
-//     if (!subject || !greeting || !body || !buttonLabel || !buttonLink || !styles) {
-//       return res.status(400).json({ message: "All fields are required" });
-//     }
+    const { id } = verifyToken(token);
+    const { subject, greeting, body, buttonLabel, buttonLink, styles } = req.body.emailTemplate;
 
-//     const newTemplate = new EmailTemplate({ subject, greeting, body, buttonLabel, buttonLink, styles });
-//     await newTemplate.save();
-//     res.status(201).json({ message: "Template saved!", template: newTemplate });
-//   } catch (error) {
-//     res.status(500).json({ message: "Server error", error: error.message });
-//   }
-// };
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          "defaultEmailTemp.subject": subject,
+          "defaultEmailTemp.greeting": greeting,
+          "defaultEmailTemp.body": body,
+          "defaultEmailTemp.buttonLabel": buttonLabel,
+          "defaultEmailTemp.buttonLink": buttonLink,
+          "defaultEmailTemp.styles": styles,
+        },
+      },
+      { new: true } // Return updated document
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.status(200).json({ message: "Email template updated successfully.", user: updatedUser });
+  } catch (error) {
+    console.error("Error saving email template:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
 
 exports.getEmails = async (req, res) => {
   try {
@@ -152,7 +172,7 @@ exports.getEmails = async (req, res) => {
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    res.status(200).json(user.emailData);
+    res.status(200).json({emails : user.emailData , username : user.username , defaultEmailTemp : user.defaultEmailTemp});
   } catch (error) {
     console.error("Error fetching emails:", error);
 
@@ -182,6 +202,7 @@ exports.trackEmailClick = async (req, res) => async (req, res) => {
 
     // Redirect to actual link (store this in the database when sending emails)
     const emailRecord = await PersonData.findById(personId);
+
     const emailData = emailRecord.emailSend.find((e) => e.emailsendRef.toString() === emailSentId);
 
     if (!emailData) return res.status(404).send("Invalid link");

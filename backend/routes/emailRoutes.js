@@ -9,7 +9,7 @@ const {
 const router = express.Router();
 
 router.post("/send", sendEmails);
-// router.post("/save", saveEmailTemplate);
+router.post("/save", saveEmailTemplate);
 router.get("/", getEmails);
 router.get("/track", trackEmailClick);
 

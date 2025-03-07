@@ -1,0 +1,39 @@
+.accordion-button {
+    background : transparent  !important;
+    color: white !important
+}
+
+@media (max-width: 576px) {
+    .search-form {
+      flex-direction: column !important;
+    }
+    
+    .search-form input {
+      width: 100%;
+      margin-bottom: 5px;
+    }
+    
+    .search-form button {
+      width: 100%;
+    }
+  }
+  
+  .profile-section {
+    display: flex;
+    align-items: center;
+    background-color: #343a40; /* Dark background for contrast */
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 2px solid white;
+    color: white;
+  }
+  
+  .profile-icon {
+    font-size: 24px;
+    margin-right: 8px;
+  }
+  
+  .username {
+    font-weight: bold;
+  }
+  

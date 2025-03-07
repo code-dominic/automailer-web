@@ -25,7 +25,6 @@ const SearchBar = ( {query , setQuery}) => {
         <Button variant="primary" type="submit">Search</Button>
       </Form>
     </Container>
-  );
-};
+  )};
 
 export default SearchBar;

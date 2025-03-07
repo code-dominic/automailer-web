@@ -9,6 +9,14 @@ const personDataSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    // numberOfMailSent : {
+    //     type : Number,
+    //     default : 0
+    // },
+    // numberOfMailResponded : {
+    //     type : Number,
+    //     default : 0
+    // },
     emailSend: [{
         emailsendRef: {
             type: mongoose.Schema.Types.ObjectId,

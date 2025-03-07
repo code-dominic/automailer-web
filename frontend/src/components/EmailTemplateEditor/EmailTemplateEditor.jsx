@@ -3,19 +3,18 @@ import axios from "axios";
 import { Button, Card, CardContent, Typography, IconButton, Tooltip } from "@mui/material";
 import { ChromePicker, SketchPicker } from "react-color";
 import { ColorLens } from "@mui/icons-material";
+import TosterNotefication from "../Dashboard/TosterNotefication";
 
-const EmailTemplateEditor = ({token}) => {
-  const [subject, setSubject] = useState("Welcome to AutoMailer!");
-  const [greeting, setGreeting] = useState("Hello [User's Name],");
-  const [body, setBody] = useState("We are thrilled to have you on board! To get started, click the button below:");
-  const [buttonLabel, setButtonLabel] = useState("Get Started");
-  const [buttonLink, setButtonLink] = useState("https://example.com");
-  const [styles, setStyles] = useState({
-    backgroundColor: "#15B346",
-    textColor: "#000000",
-    buttonColor: "#15B346",
-    buttonTextColor: "#000000",
-  });
+const EmailTemplateEditor = ({token , defaultEmailTemp}) => {
+  const [show, setShow] = useState(true);
+  const [variant , setVariant] = useState("success");
+
+  const [subject, setSubject] = useState(  defaultEmailTemp.subject);
+  const [greeting, setGreeting] = useState(defaultEmailTemp.greeting);
+  const [body, setBody] = useState(defaultEmailTemp.body);
+  const [buttonLabel, setButtonLabel] = useState(defaultEmailTemp.buttonLabel);
+  const [buttonLink, setButtonLink] = useState( defaultEmailTemp.buttonLink);
+  const [styles, setStyles] = useState( defaultEmailTemp.styles);
   const [message, setMessage] = useState("");
   const [activePicker, setActivePicker] = useState(null);
   const pickerRef = useRef(null);
@@ -40,6 +39,8 @@ const EmailTemplateEditor = ({token}) => {
     if(!Tokenlocal)  {
       console.error("No token found, authentication required.");
       setMessage("Authentication error. Please log in again.");
+      setShow(true);
+      setVariant('danger');
       return;
     }
 
@@ -59,9 +60,13 @@ const EmailTemplateEditor = ({token}) => {
         }
       );
       setMessage(response.data.message);
+      setShow(true)
+      setVariant('success');
     } catch (error) {
       console.error("Error sending emails:", error);
       setMessage("Error sending emails. Please try again.");
+      setShow(true);
+      setVariant('danger');
     }
   };
 
@@ -79,11 +84,19 @@ const EmailTemplateEditor = ({token}) => {
     console.log(emailTemplate);
 
     try {
-      const response = await axios.post("http://localhost:5000/emails/save", { emailTemplate });
+      const response = await axios.post("http://localhost:5000/emails/save", { emailTemplate } , {
+        headers: {
+          Authorization: token, 
+        }
+      });
       setMessage(response.data.message);
+      setShow(true);
+      setVariant('success');
     } catch (error) {
       console.error("Error Saving  emails:", error);
       setMessage("Error Saving emails. Please try again.");
+      setShow(true);
+      setVariant('danger');
     }
   };
 
@@ -299,7 +312,9 @@ const EmailTemplateEditor = ({token}) => {
         </Button>
 
         {/* Message */}
-        {message && <Typography style={{ marginTop: "1rem", color: "green" }}>{message}</Typography>}
+        {/* <TosterNotefication message={message} variant='success'/> */}
+        {message && <TosterNotefication message={message} variant={variant} show={show} setShow={setShow}/>}
+        
       </CardContent>
     </Card>
   );

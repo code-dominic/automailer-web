@@ -4,7 +4,7 @@ import { Modal, Button, Container, Row, Col } from "react-bootstrap";
 import CardInfo from "./CardInfo";
 import EmailTemplate from "./EmailTemplate";
 
-const PersonDataDashboard = ({ _id, show, handleClose }) => {
+const PersonDataDashboard = ({ _id, show, handleClose ,needRefresh , setNeedRefresh}) => {
     const [personData, setPersonData] = useState(null);
     const [currEmail, setCurrEmail] = useState();
 
@@ -35,9 +35,8 @@ const PersonDataDashboard = ({ _id, show, handleClose }) => {
 
         const deleteData = async() =>{
             try{
-                alert('deleting data');
                 const res = await axios.get(`http://localhost:5000/emails/delete?id=${_id}`);
-
+                setNeedRefresh(needRefresh+1);
             }catch(err){
                 console.log(err);
             }

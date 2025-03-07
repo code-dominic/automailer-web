@@ -12,6 +12,7 @@ const App = () => {
 
   useEffect(() => {
     if (!token) {
+      console.log("jduw");
       navigate('/login');
     }
   }, [token]);

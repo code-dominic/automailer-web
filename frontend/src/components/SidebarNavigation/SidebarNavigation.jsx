@@ -6,22 +6,16 @@ import SidePanelItems from "../SidePanalItem/SidePanelItems";
 import FileUpload from "../FileUploade/FileUpload";
 import Logout from "../logout/Logout";
 
-const SidebarNavigation = ({ token, setToken, emailsRequired, setEmailsRequired }) => {
-  const [show, setShow] = useState(false);
+const SidebarNavigation = ({ token, setToken, emailsRequired, setEmailsRequired ,needRefresh , setNeedRefresh , show , setShow}) => {
+  // const [show, setShow] = useState(false);
 
   return (
     <>
       {/* Navbar for Small Screens - Placed at the Top */}
-      <Navbar bg="dark" variant="dark" fixed="top" className="d-lg-none">
-        <Container>
-          <Button variant="outline-light" onClick={() => setShow(true)}>☰</Button>
-          <Navbar.Brand className="ms-3 ms-auto">Profile</Navbar.Brand>
-        </Container>
-      </Navbar>
+      
 
       {/* Sidebar for Large Screens */}
-      <div className="d-none d-lg-block bg-dark text-white vh-100 p-3" style={{ width: "250px", marginTop: "56px" }}>
-        <h4>Profile</h4>
+      <div className="d-none d-lg-block bg-dark text-white p-3" style={{ width: "250px", marginTop : "1px"}}>
         <div className="d-flex flex-column gap-2">
           {["All emails", "Sent mail", "Pending", "Responded", "Unresponded"].map((name) => (
             <SidePanelItems
@@ -32,7 +26,7 @@ const SidebarNavigation = ({ token, setToken, emailsRequired, setEmailsRequired 
               variant="outline-light"
             />
           ))}
-          <FileUpload token={token} />
+          <FileUpload token={token} needRefresh={needRefresh} setNeedRefresh = {setNeedRefresh} />
           {token && <Logout token={token} setToken={setToken} />}
         </div>
       </div>
