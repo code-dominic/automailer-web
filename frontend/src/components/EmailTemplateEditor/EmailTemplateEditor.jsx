@@ -5,7 +5,7 @@ import { ChromePicker, SketchPicker } from "react-color";
 import { ColorLens } from "@mui/icons-material";
 import TosterNotefication from "../Dashboard/TosterNotefication";
 
-const EmailTemplateEditor = ({token , defaultEmailTemp}) => {
+const EmailTemplateEditor = ({token , defaultEmailTemp , needRefresh , setNeedRefresh}) => {
   const [show, setShow] = useState(true);
   const [variant , setVariant] = useState("success");
 
@@ -62,6 +62,7 @@ const EmailTemplateEditor = ({token , defaultEmailTemp}) => {
       setMessage(response.data.message);
       setShow(true)
       setVariant('success');
+      setNeedRefresh(needRefresh+1);
     } catch (error) {
       console.error("Error sending emails:", error);
       setMessage("Error sending emails. Please try again.");

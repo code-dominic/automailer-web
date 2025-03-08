@@ -15,7 +15,7 @@ export default function Register({ setToken }) {
 
   const handleSubmit = async () => {
     try {
-      const res = await axios.post("http://localhost:5000/register", { username, password, email, appPassword });
+      const res = await axios.post("http://localhost:5000/user/register", { username, password, email, appPassword });
       setToken(res.data.token);
       navigate("/");
     } catch (err) {

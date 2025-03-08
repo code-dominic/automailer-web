@@ -13,7 +13,7 @@ export default function Login({ setToken }) {
 
   const handleSubmit = async () => {
     try {
-      const res = await axios.post("http://localhost:5000/login", { username, password });
+      const res = await axios.post("http://localhost:5000/user/login", { username, password });
       setToken(res.data.token);
       navigate("/");
     } catch (err) {

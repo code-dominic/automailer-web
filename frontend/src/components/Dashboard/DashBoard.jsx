@@ -77,7 +77,7 @@ const DashBoard = ({token , setToken}) => {
                 {loading ? <p>Loading emails...</p> : <EmailList emails={emails} setEmails={setEmails} emailsRequired={emailsRequired} token={token} needRefresh={needRefresh} setNeedRefresh={setNeedRefresh}/>}
               </Col>
               <Col xs={12} lg={5}>
-                <EmailTemplateEditor token={token} defaultEmailTemp={defaultEmailTemp}/>
+                <EmailTemplateEditor token={token} defaultEmailTemp={defaultEmailTemp} needRefresh={needRefresh} setNeedRefresh={setNeedRefresh}/>
               </Col>
             </Row>
           </Container>

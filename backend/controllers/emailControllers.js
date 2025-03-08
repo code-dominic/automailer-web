@@ -65,7 +65,7 @@ exports.sendEmails = async (req, res) => {
     const bulkUpdates = [];
 
     const emailPromises = user.emailData.map(async (emailDoc) => {
-      const trackingLink = `http://localhost:5000/track-click?personId=${emailDoc._id}&emailSentId=${emailsSent._id}&redirectUrl=${encodeURIComponent(buttonLink)}`;;
+      const trackingLink = `http://localhost:5000/emails/track-click?personId=${emailDoc._id}&emailSentId=${emailsSent._id}&redirectUrl=${encodeURIComponent(buttonLink)}`;;
       console.log(trackingLink);
       const mailOptions = {
         from: user.email,
@@ -184,10 +184,13 @@ exports.getEmails = async (req, res) => {
   }
 };
 
-exports.trackEmailClick = async (req, res) => async (req, res) => {
+exports.trackEmailClick = async (req, res) => {
   try {
-    const { personId, emailSentId } = req.params;
-    console.log(personId)
+    const { personId, emailSentId, redirectUrl } = req.query;
+
+    if (!personId || !emailSentId || !redirectUrl) {
+      return res.status(400).send("Invalid tracking link.");
+    }
 
     // Update click tracking in the database
     await PersonData.updateOne(
@@ -200,16 +203,61 @@ exports.trackEmailClick = async (req, res) => async (req, res) => {
       }
     );
 
-    // Redirect to actual link (store this in the database when sending emails)
-    const emailRecord = await PersonData.findById(personId);
-
-    const emailData = emailRecord.emailSend.find((e) => e.emailsendRef.toString() === emailSentId);
-
-    if (!emailData) return res.status(404).send("Invalid link");
-
-    res.redirect(emailData.buttonLink); // Redirect to actual video/doc
+    // Redirect the user to the actual destination
+    res.redirect(decodeURIComponent(redirectUrl));
   } catch (error) {
     console.error("Tracking error:", error);
     res.status(500).send("Error tracking click");
   }
 }
+
+exports.getData = async (req, res) => {
+  try {
+      const { id } = req.query;
+      if (!id) {
+          return res.status(400).json({ error: "ID is required" });
+      }
+
+      console.log("Fetching data for ID:", id);
+
+      const personData = await PersonData.findById(id)
+          .populate({
+              path: "emailSend.emailsendRef",  // ✅ Corrected
+          })
+          .exec();
+
+      console.log("After population:", JSON.stringify(personData, null, 2)); // Debug output
+
+      if (!personData) {
+          return res.status(404).json({ error: "Person not found" });
+      }
+
+      res.json(personData);
+  } catch (error) {
+      console.error("Error fetching person data:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+exports.deleteData = async(req,res)=>{
+  try{
+    const {id } = req.query;
+    
+    const deletedPerson = await PersonData.findByIdAndDelete(id);
+
+    if (!deletedPerson) {
+      return res.status(404).json({ message: "Person not found" });
+    }
+
+    await User.updateMany(
+      { emailData: id }, // Find users with this reference
+      { $pull: { emailData: id } } // Remove reference from array
+  );
+
+  res.json({ message: "PersonData deleted and reference removed from User." });
+} catch (error) {
+  console.error("Error deleting PersonData:", error);
+  res.status(500).json({ message: "Server error" });
+}
+
+};
