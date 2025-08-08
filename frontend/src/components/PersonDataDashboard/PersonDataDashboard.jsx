@@ -5,6 +5,7 @@ import CardInfo from "./CardInfo";
 import EmailTemplate from "./EmailTemplate";
 
 const PersonDataDashboard = ({ _id, show, handleClose ,needRefresh , setNeedRefresh}) => {
+    const backendURL = import.meta.env.VITE_BACKEND_URL;
     const [personData, setPersonData] = useState(null);
     const [currEmail, setCurrEmail] = useState();
 
@@ -13,7 +14,7 @@ const PersonDataDashboard = ({ _id, show, handleClose ,needRefresh , setNeedRefr
 
         const fetchData = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/emails/data?id=${_id}`);
+                const response = await axios.get(`${backendURL}emails/data?id=${_id}`);
                 setPersonData(response.data);
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -35,7 +36,7 @@ const PersonDataDashboard = ({ _id, show, handleClose ,needRefresh , setNeedRefr
 
         const deleteData = async() =>{
             try{
-                const res = await axios.get(`http://localhost:5000/emails/delete?id=${_id}`);
+                const res = await axios.get(`${backendURL}emails/delete?id=${_id}`);
                 setNeedRefresh(needRefresh+1);
             }catch(err){
                 console.log(err);

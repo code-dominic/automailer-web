@@ -6,6 +6,7 @@ import { ColorLens } from "@mui/icons-material";
 import TosterNotefication from "../Dashboard/TosterNotefication";
 
 const EmailTemplateEditor = ({token , defaultEmailTemp , needRefresh , setNeedRefresh}) => {
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   const [show, setShow] = useState(true);
   const [variant , setVariant] = useState("success");
 
@@ -51,7 +52,7 @@ const EmailTemplateEditor = ({token , defaultEmailTemp , needRefresh , setNeedRe
       //   emailTemplate }
       // );
       const response = await axios.post(
-        "http://localhost:5000/emails/send",
+        `${backendURL}emails/send`,
         { emailTemplate }, // Body
         {
           headers: {
@@ -85,7 +86,7 @@ const EmailTemplateEditor = ({token , defaultEmailTemp , needRefresh , setNeedRe
     console.log(emailTemplate);
 
     try {
-      const response = await axios.post("http://localhost:5000/emails/save", { emailTemplate } , {
+      const response = await axios.post(`${backendURL}emails/save`, { emailTemplate } , {
         headers: {
           Authorization: token, 
         }

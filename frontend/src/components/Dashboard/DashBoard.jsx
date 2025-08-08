@@ -8,6 +8,7 @@ import SidebarNavigation from "../SidebarNavigation/SidebarNavigation";
 import NavBar from "./NavBar";
 
 const DashBoard = ({token , setToken}) => {
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   const [emails, setEmails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -21,7 +22,7 @@ const DashBoard = ({token , setToken}) => {
     console.log("Fetching emails..."); 
     const fetchEmails = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/emails?emails=All emails` , {
+        const response = await axios.get(`${backendURL}emails?emails=All emails` , {
           headers: {
             "authorization" : token
         },

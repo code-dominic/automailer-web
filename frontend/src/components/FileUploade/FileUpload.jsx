@@ -3,6 +3,7 @@ import axios from "axios";
 import { Form, Button } from "react-bootstrap";
 
 const FileUpload = ({token , needRefresh , setNeedRefresh }) => {
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   const [file, setFile] = useState(null);
 
   const handleFileChange = (e) => {
@@ -20,7 +21,7 @@ const FileUpload = ({token , needRefresh , setNeedRefresh }) => {
 
 
     try {
-      const response = await axios.post("http://localhost:5000/upload", formData, {
+      const response = await axios.post(`${backendURL}upload`, formData, {
         headers: {
           "Content-Type": "multipart/form-data", // Required for file upload
           "authorization" : token

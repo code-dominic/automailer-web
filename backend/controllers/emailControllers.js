@@ -65,7 +65,7 @@ exports.sendEmails = async (req, res) => {
     const bulkUpdates = [];
 
     const emailPromises = user.emailData.map(async (emailDoc) => {
-      const trackingLink = `http://localhost:5000/emails/track-click?personId=${emailDoc._id}&emailSentId=${emailsSent._id}&redirectUrl=${encodeURIComponent(buttonLink)}`;;
+      const trackingLink = `${process.env.BACKEND_URL}emails/track-click?personId=${emailDoc._id}&emailSentId=${emailsSent._id}&redirectUrl=${encodeURIComponent(buttonLink)}`;;
       console.log(trackingLink);
       const mailOptions = {
         from: user.email,

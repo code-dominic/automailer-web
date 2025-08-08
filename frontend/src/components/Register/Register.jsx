@@ -7,6 +7,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function Register({ setToken }) {
   const navigate = useNavigate();
+    const backendURL = import.meta.env.VITE_BACKEND_URL;
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -15,7 +16,8 @@ export default function Register({ setToken }) {
 
   const handleSubmit = async () => {
     try {
-      const res = await axios.post("http://localhost:5000/user/register", { username, password, email, appPassword });
+      console.log(backendURL);
+      const res = await axios.post(`${backendURL}user/register`, { username, password, email, appPassword });
       setToken(res.data.token);
       navigate("/");
     } catch (err) {

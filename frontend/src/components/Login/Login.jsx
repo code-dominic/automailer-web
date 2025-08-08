@@ -5,7 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Form, Button, Alert, Card } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
+
 export default function Login({ setToken }) {
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -13,7 +15,7 @@ export default function Login({ setToken }) {
 
   const handleSubmit = async () => {
     try {
-      const res = await axios.post("http://localhost:5000/user/login", { username, password });
+      const res = await axios.post(`${backendURL}user/login`, { username, password });
       setToken(res.data.token);
       navigate("/");
     } catch (err) {
