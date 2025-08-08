@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Table, Pagination, Container, Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import PersonDataDashboard from "../personDataDashboard/PersonDataDashboard";
+import PersonDataDashboard from "../PersonDataDashboard/PersonDataDashboard";
 import SearchBar from "../SeachBar/Search";
 
 const EmailList = ({ emails, emailsRequired , setNeedRefresh,needRefresh }) => {
