@@ -4,7 +4,7 @@ import Login from "./components/Login/Login";
 import Register from "./components/Register/Register";
 import useToken from "./components/App/useToken";
 import DashBoard from './components/Dashboard/DashBoard';
-import PersonDataDashboard from "./components/personDataDashboard/PersonDataDashboard";
+import PersonDataDashboard from "./components/PersonDataDashboard/PersonDataDashboard";
 
 const App = () => {
   const { token, setToken } = useToken();
