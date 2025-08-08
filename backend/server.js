@@ -23,5 +23,9 @@ app.use("/upload", uploadRoutes);
 app.use("/emails", emailRoutes);
 app.use('/user' , userRoutes);
 
+app.get('/' , (req , res)=>{
+    res.json({message : "backend is working!!"});
+})
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
