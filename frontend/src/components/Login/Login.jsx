@@ -4,6 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Form, Button, Alert, Card } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import bgImg from './image.png';
 
 
 export default function Login({ setToken }) {
@@ -31,7 +32,7 @@ export default function Login({ setToken }) {
   return (
     <div
       style={{
-        backgroundImage: "url('.././public/backgroundImage/BackgroundImage2.jpeg')",
+        backgroundImage: `url(${bgImg})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         height: "100vh",
