@@ -29,7 +29,7 @@ const DashBoard = ({token , setToken}) => {
       });
       console.log(response)
         setEmails(response.data.emails);
-        setUsername(response.data.username)
+        setUsername(response.data.username);
         setDefaultEmailTemp(response.data.defaultEmailTemp);
         
         setLoading(false);
