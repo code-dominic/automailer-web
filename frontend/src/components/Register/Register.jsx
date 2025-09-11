@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Container, Row, Col, Form, Button, Alert, Card, Accordion } from "react-bootstrap";
+import { Container, Row, Col, Form, Button, Alert, Card, Accordion, Navbar } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import bgImg from '../Login/image.png';
+import NavBar from "../Home/NavBar";
 
 export default function Register({ setToken }) {
   const navigate = useNavigate();
@@ -31,7 +32,8 @@ export default function Register({ setToken }) {
     navigate("/login");
   };
 
-  return (
+  return (<>
+    <NavBar/>
     <div
       style={{
         backgroundImage: `url(${bgImg})`,
@@ -119,6 +121,7 @@ export default function Register({ setToken }) {
         </Row>
       </Container>
     </div>
+     </>
   );
 }
 

@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Form, Button, Alert, Card } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import bgImg from './image.png';
+import NavBar from "../Home/NavBar";
 
 
 export default function Login({ setToken }) {
@@ -29,7 +30,8 @@ export default function Login({ setToken }) {
     navigate("/register");
   };
 
-  return (
+  return (<>
+    <NavBar />
     <div
       style={{
         backgroundImage: `url(${bgImg})`,
@@ -82,6 +84,7 @@ export default function Login({ setToken }) {
         </Row>
       </Container>
     </div>
+    </>
   );
 }
 

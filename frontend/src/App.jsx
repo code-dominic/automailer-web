@@ -5,6 +5,7 @@ import Register from "./components/Register/Register";
 import useToken from "./components/App/useToken";
 import DashBoard from './components/Dashboard/DashBoard';
 import PersonDataDashboard from "./components/PersonDataDashboard/PersonDataDashboard";
+import Home from "./components/Home/Home";
 
 const App = () => {
   const { token, setToken } = useToken();
@@ -13,7 +14,7 @@ const App = () => {
   useEffect(() => {
     if (!token) {
       console.log("jduw");
-      navigate('/login');
+      navigate('/home');
     }
   }, [token]);
 
@@ -21,6 +22,7 @@ const App = () => {
     <Routes>
       {!token ? (
         <>
+          <Route path="/home" element ={<Home />}/>
           <Route path="/login" element={<Login setToken={setToken} />} />
           <Route path="/register" element={<Register setToken={setToken} />} />
         </>
