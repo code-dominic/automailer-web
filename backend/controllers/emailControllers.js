@@ -66,14 +66,18 @@ exports.sendEmails = async (req, res) => {
 
     const emailPromises = user.emailData.map(async (emailDoc) => {
       const trackingLink = `${process.env.BACKEND_URL}emails/track-click?personId=${emailDoc._id}&emailSentId=${emailsSent._id}&redirectUrl=${encodeURIComponent(buttonLink)}`;;
-      console.log(trackingLink);
+      
+      console.log(greeting);
+      const newGreeting =  greeting.replace("[User's Name]", emailDoc.name);
+      console.log(newGreeting);
+      console.log(newGreeting );
       const mailOptions = {
         from: user.email,
         to: emailDoc.emailId,
         subject,
         html: Template({
           subject,
-          greeting,
+          greeting : newGreeting ,
           body,
           buttonLabel,
           buttonLink: trackingLink,  // Use tracking link instead of actual link
@@ -131,6 +135,8 @@ exports.saveEmailTemplate = async (req, res) => {
 
     const { id } = verifyToken(token);
     const { subject, greeting, body, buttonLabel, buttonLink, styles } = req.body.emailTemplate;
+
+    console.log("greeting : " , greeting);
 
     const updatedUser = await User.findByIdAndUpdate(
       id,

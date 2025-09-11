@@ -32,19 +32,24 @@ export default function Register({ setToken }) {
     navigate("/login");
   };
 
-  return (<>
+  return (<div className="h-full w-full">
     <NavBar/>
     <div
-      style={{
-        backgroundImage: `url(${bgImg})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        height: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
+  style={{
+    backgroundImage: `url(${bgImg})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    minHeight: "100vh",   // <-- will cover full screen but also expand if content grows
+    width: "100%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: "2rem 0",   // add padding so content has space to breathe
+  }}
+>
+
+
       <Container>
         <Row className="justify-content-center">
           <Col md={6} className="d-flex justify-content-center">
@@ -121,7 +126,7 @@ export default function Register({ setToken }) {
         </Row>
       </Container>
     </div>
-     </>
+     </div>
   );
 }
 

@@ -38,8 +38,8 @@ exports.uploadCSV = async (req, res) => {
         console.log("CSV Headers:", Object.keys(results[0] || {}));
 
         const persons = results.map((row) => ({
-            name: row.name || row["name"] || row["_1"] || "Unknown",
-            emailId: row.email || row["email"] || row["email address"] || row["_0"]
+            name: row.name || row['Name'] || row["name"] || row["_0"] || "Unknown",
+            emailId: row.email || row['Email'] || row["email"] || row["email address"] || row["_1"]
           }))
           .filter((p) => p.emailId && p.emailId.toLowerCase() !== "email");
 

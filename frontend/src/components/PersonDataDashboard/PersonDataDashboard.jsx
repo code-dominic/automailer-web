@@ -14,6 +14,7 @@ const PersonDataDashboard = ({ _id, show, handleClose ,needRefresh , setNeedRefr
 
         const fetchData = async () => {
             try {
+                // alert("hit");
                 const response = await axios.get(`${backendURL}emails/data?id=${_id}`);
                 setPersonData(response.data);
             } catch (error) {
