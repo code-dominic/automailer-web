@@ -30,8 +30,9 @@ const verifyToken = (token) => {
 exports.sendEmails = async (req, res) => {
   try {
     const token = req.headers["authorization"];
-    // console.log("token:", token);
     const { id } = verifyToken(token);
+
+    const ids = req.body.ids;
 
     const user = await User.findById(id).populate("emailData");
 
@@ -39,9 +40,18 @@ exports.sendEmails = async (req, res) => {
       return res.status(400).json({ message: "No pending emails to send." });
     }
 
+    // ✅ Filter only selected IDs
+    const filteredEmailData = user.emailData.filter(emailDoc =>
+      ids.includes(emailDoc._id.toString())
+    );
+
+    if (filteredEmailData.length === 0) {
+      return res.status(400).json({ message: "No matching emails found for the selected IDs." });
+    }
+
     const { subject, greeting, body, buttonLabel, buttonLink, styles } = req.body.emailTemplate;
 
-    // Creating a new EmailsSent document
+    // Create a new EmailsSent document
     const emailsSent = new EmailsSent({
       subject,
       greeting,
@@ -64,23 +74,24 @@ exports.sendEmails = async (req, res) => {
 
     const bulkUpdates = [];
 
-    const emailPromises = user.emailData.map(async (emailDoc) => {
-      const trackingLink = `${process.env.BACKEND_URL}emails/track-click?personId=${emailDoc._id}&emailSentId=${emailsSent._id}&redirectUrl=${encodeURIComponent(buttonLink)}`;;
-      
-      console.log(greeting);
-      const newGreeting =  greeting.replace("[User's Name]", emailDoc.name);
-      console.log(newGreeting);
-      console.log(newGreeting );
+    // ✅ Loop through only filteredEmailData
+    const emailPromises = filteredEmailData.map(async (emailDoc) => {
+      // const trackingLink = `${process.env.BACKEND_URL}emails/track-click?personId=${emailDoc._id}&emailSentId=${emailsSent._id}&redirectUrl=${encodeURIComponent(buttonLink)}`;
+      const trackingLink = `${process.env.BACKEND_URL}emails/track-click?personId=${emailDoc._id}&emailSentId=${emailsSent._id}&redirectLink=${encodeURIComponent(buttonLink)}`;
+      console.log
+
+      const newGreeting = greeting.replace("[User's Name]", emailDoc.name);
+
       const mailOptions = {
         from: user.email,
         to: emailDoc.emailId,
         subject,
         html: Template({
           subject,
-          greeting : newGreeting ,
+          greeting: newGreeting,
           body,
           buttonLabel,
-          buttonLink: trackingLink,  // Use tracking link instead of actual link
+          buttonLink: trackingLink,
           styles,
           _id: emailDoc._id,
         }),
@@ -89,7 +100,7 @@ exports.sendEmails = async (req, res) => {
       try {
         await transporter.sendMail(mailOptions);
 
-        // Update each PersonData document to track the sent email
+        // ✅ Use emailDoc._id, not filteredEmailData._id
         bulkUpdates.push({
           updateOne: {
             filter: { _id: emailDoc._id },
@@ -112,7 +123,6 @@ exports.sendEmails = async (req, res) => {
 
     await Promise.all(emailPromises);
 
-    // Apply bulk updates to PersonData collection
     if (bulkUpdates.length > 0) {
       await PersonData.bulkWrite(bulkUpdates);
     }
@@ -123,6 +133,7 @@ exports.sendEmails = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 
 
@@ -192,10 +203,11 @@ exports.getEmails = async (req, res) => {
 
 exports.trackEmailClick = async (req, res) => {
   try {
-    const { personId, emailSentId, redirectUrl } = req.query;
+    console.log("hitting route");
+    const { personId, emailSentId, redirectLink } = req.query;
 
-    if (!personId || !emailSentId || !redirectUrl) {
-      return res.status(400).send("Invalid tracking link.");
+    if (!personId || !emailSentId || !redirectLink) {
+      return res.status(400).send("Invalid tracking link..");
     }
 
     // Update click tracking in the database
@@ -210,7 +222,7 @@ exports.trackEmailClick = async (req, res) => {
     );
 
     // Redirect the user to the actual destination
-    res.redirect(decodeURIComponent(redirectUrl));
+    res.redirect(decodeURIComponent(redirectLink));
   } catch (error) {
     console.error("Tracking error:", error);
     res.status(500).send("Error tracking click");

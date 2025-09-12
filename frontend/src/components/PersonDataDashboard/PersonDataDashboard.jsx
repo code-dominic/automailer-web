@@ -8,6 +8,7 @@ const PersonDataDashboard = ({ _id, show, handleClose ,needRefresh , setNeedRefr
     const backendURL = import.meta.env.VITE_BACKEND_URL;
     const [personData, setPersonData] = useState(null);
     const [currEmail, setCurrEmail] = useState();
+    
 
     useEffect(() => {
         if (!_id) return;

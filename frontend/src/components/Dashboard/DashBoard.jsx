@@ -17,6 +17,9 @@ const DashBoard = ({token , setToken}) => {
   const [show , setShow] = useState(false);
   const [username , setUsername] = useState("");
   const [defaultEmailTemp , setDefaultEmailTemp] =useState();
+  const [selectedRows, setSelectedRows] = useState(new Set());
+  const [selectAll, setSelectAll] = useState(false);
+  
 
   useEffect(() => {
     console.log("Fetching emails..."); 
@@ -75,10 +78,28 @@ const DashBoard = ({token , setToken}) => {
             <Row className="gx-0">
               <Col xs={12} lg={5} className="flex-grow-1">
                 <h4 style={{textAlign : "center"}}>{emailsRequired}</h4>
-                {loading ? <p>Loading emails...</p> : <EmailList emails={emails} setEmails={setEmails} emailsRequired={emailsRequired} token={token} needRefresh={needRefresh} setNeedRefresh={setNeedRefresh}/>}
+                {loading ? <p>Loading emails...</p> : <EmailList 
+                                                            emails={emails} 
+                                                            setEmails={setEmails} 
+                                                            emailsRequired={emailsRequired} 
+                                                            token={token} 
+                                                            needRefresh={needRefresh} 
+                                                            setNeedRefresh={setNeedRefresh}
+                                                            setSelectedRows = {setSelectedRows}
+                                                            setSelectAll = {setSelectAll}
+                                                            selectedRows={selectedRows}
+                                                            selectAll = {selectAll}
+                                                            />}
               </Col>
               <Col xs={12} lg={5}>
-                <EmailTemplateEditor token={token} defaultEmailTemp={defaultEmailTemp} needRefresh={needRefresh} setNeedRefresh={setNeedRefresh}/>
+                <EmailTemplateEditor 
+                            token={token} 
+                            defaultEmailTemp={defaultEmailTemp} 
+                            needRefresh={needRefresh} 
+                            setNeedRefresh={setNeedRefresh}
+                            selectAll={selectAll}
+                            selectedRows = {selectedRows}
+                            />
               </Col>
             </Row>
           </Container>

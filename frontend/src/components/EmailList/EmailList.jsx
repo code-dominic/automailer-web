@@ -43,14 +43,18 @@ const EmailList = ({
   emails = [], 
   emailsRequired = "All emails", 
   setNeedRefresh,
-  needRefresh 
+  needRefresh,
+  selectedRows,
+  setSelectedRows,
+  selectAll,
+  setSelectAll
 }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [query, setQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedRows, setSelectedRows] = useState(new Set());
-  const [selectAll, setSelectAll] = useState(false);
+  // const [selectedRows, setSelectedRows] = useState(new Set());
+  // const [selectAll, setSelectAll] = useState(false);
   const [showBulkActions, setShowBulkActions] = useState(false);
   const [showDropdown, setShowDropdown] = useState(null);
   const emailsPerPage = 15;

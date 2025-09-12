@@ -5,7 +5,7 @@ import { ChromePicker, SketchPicker } from "react-color";
 import { ColorLens } from "@mui/icons-material";
 import TosterNotefication from "../Dashboard/TosterNotefication";
 
-const EmailTemplateEditor = ({token , defaultEmailTemp , needRefresh , setNeedRefresh}) => {
+const EmailTemplateEditor = ({token , defaultEmailTemp , needRefresh , setNeedRefresh , selectAll ,selectedRows}) => {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
   const [show, setShow] = useState(true);
   const [variant , setVariant] = useState("success");
@@ -46,14 +46,13 @@ const EmailTemplateEditor = ({token , defaultEmailTemp , needRefresh , setNeedRe
     }
 
     try {
-      // const response = await axios.post("http://localhost:5000/emails/send", { 
-
-      //   headers : { "authorization" : token},
-      //   emailTemplate }
-      // );
+      console.log(selectedRows);
+      const mySelectedRows = [...selectedRows];
       const response = await axios.post(
         `${backendURL}emails/send`,
-        { emailTemplate }, // Body
+        { emailTemplate ,
+          ids : mySelectedRows
+        }, // Body
         {
           headers: {
             Authorization: token, 
