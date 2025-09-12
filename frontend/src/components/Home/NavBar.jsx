@@ -25,7 +25,7 @@ const NavBar = () =>{
           
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
-              {['home', 'login', 'register', 'contact us', 'about'].map((item) => (
+              {['home', 'login', 'contact us', 'about'].map((item) => (
                 <li className="nav-item" key={item}>
                   <a 
                     className={`nav-link fw-medium ${activeNav === item ? 'text-primary' : 'text-dark'}`}
